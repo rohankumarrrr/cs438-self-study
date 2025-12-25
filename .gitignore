@@ -1,1 +1,10 @@
 *.DS_Store
+
+# Object files
+*/obj/*
+
+# Compiled source files
+mp0/client
+mp0/server
+mp0/talker
+mp0/listener
