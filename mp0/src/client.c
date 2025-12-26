@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
 		fwrite(buffer, 1, bytes_received, stdout);
 		file_size_n -= bytes_received;
 	}
+	fwrite("\n", 1, 1, stdout);
 
 	if (bytes_received == -1) {
 		perror("recv file data");
