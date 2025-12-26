@@ -139,6 +139,12 @@ int main(int argc, char *argv[])
 			}
 
 			int filesize = atoi(argv[2]);
+			if (send(new_fd, &filesize, sizeof(filesize), 0) == -1) {
+				perror("send file size");
+				fclose(fp);
+				close(new_fd);
+				exit(1);
+			}
 
 			char buffer[filesize];
 			int bytes_read;
