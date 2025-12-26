@@ -42,7 +42,7 @@ void *get_in_addr(struct sockaddr *sa)
 	return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	// listen on sock_fd, new connection on new_fd
 	int sockfd, new_fd;
@@ -53,6 +53,11 @@ int main(void)
 	int yes=1;
 	char s[INET6_ADDRSTRLEN];
 	int rv;
+
+	if (argc != 3) {
+		fprintf(stderr,"usage: server filepath filesize\n");
+		exit(1);
+	}
 
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_INET;
@@ -125,8 +130,27 @@ int main(void)
 
 		if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
-			if (send(new_fd, "Hello, world!", 13, 0) == -1)
-				perror("send");
+
+			FILE *fp = fopen(argv[1], "rb");
+			if (fp == NULL) {
+				perror("File open error");
+				close(new_fd);
+				exit(1);
+			}
+
+			int filesize = atoi(argv[2]);
+
+			char buffer[1024];
+			int bytes_read;
+			while (filesize > 0 && (bytes_read = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
+				if (send(new_fd, buffer, bytes_read, 0) == -1) {
+					perror("send");
+					break;
+				}
+				filesize -= bytes_read;
+			}
+
+			fclose(fp);
 			close(new_fd);
 			exit(0);
 		}
