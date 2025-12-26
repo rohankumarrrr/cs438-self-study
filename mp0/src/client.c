@@ -89,10 +89,10 @@ int main(int argc, char *argv[])
 		close(sockfd);
 		exit(1);
 	}
+
+	printf("client: received %u bytes\n", file_size);
+
 	uint32_t file_size_n = ntohl(file_size);
-
-	printf("client: received %u bytes\n", file_size_n);
-
 	char buffer[MAXDATASIZE];
 	int bytes_received;
 	while (file_size_n > 0 && (bytes_received = recv(sockfd, buffer, sizeof(buffer), 0)) > 0) {
