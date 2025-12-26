@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 
 			int filesize = atoi(argv[2]);
 
-			char buffer[1024];
+			char buffer[100];
 			int bytes_read;
 			while (filesize > 0 && (bytes_read = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
 				if (send(new_fd, buffer, bytes_read, 0) == -1) {

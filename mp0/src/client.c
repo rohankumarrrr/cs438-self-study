@@ -31,7 +31,6 @@ void *get_in_addr(struct sockaddr *sa)
 int main(int argc, char *argv[])
 {
 	int sockfd, numbytes;  
-	char buf[MAXDATASIZE];
 	struct addrinfo hints, *servinfo, *p;
 	int rv;
 	char s[INET6_ADDRSTRLEN];
@@ -103,7 +102,7 @@ int main(int argc, char *argv[])
 
 	printf("client: received %u bytes\n", file_size_n);
 
-	char buffer[1024];
+	char buffer[MAXDATASIZE];
 	int bytes_received;
 	while (file_size_n > 0 && (bytes_received = recv(sockfd, buffer, sizeof(buffer), 0)) > 0) {
 		fwrite(buffer, 1, bytes_received, stdout);
