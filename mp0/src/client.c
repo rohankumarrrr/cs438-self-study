@@ -30,7 +30,7 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(int argc, char *argv[])
 {
-	int sockfd, numbytes;  
+	int sockfd;  
 	struct addrinfo hints, *servinfo, *p;
 	int rv;
 	char s[INET6_ADDRSTRLEN];
@@ -82,15 +82,6 @@ int main(int argc, char *argv[])
 	printf("client: connected to %s\n", s);
 
 	freeaddrinfo(servinfo); // all done with this structure
-
-	// if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
-	//     perror("recv");
-	//     exit(1);
-	// }
-
-	// buf[numbytes] = '\0';
-
-	// printf("client: received '%s'\n",buf);
 
 	uint32_t file_size;
 	if (recv(sockfd, &file_size, sizeof(file_size), MSG_WAITALL)!= sizeof(file_size)) {
