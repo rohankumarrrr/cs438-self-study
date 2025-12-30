@@ -114,10 +114,10 @@ int main(int argc, char *argv[])
     snprintf(request, sizeof(request),
              "GET %s HTTP/1.1\r\n"
              "User-Agent: http_client/1.0\r\n"
-             "Host: %s\r\n"
+             "Host: %s:%s\r\n"
              "Connection: Keep-Alive\r\n"
              "\r\n",
-             path, hostname);
+             path, hostname, port_str);
 
     int len = strlen(request);
     if (send(sockfd, request, len, 0) != len) {
@@ -126,11 +126,42 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    FILE *fp = fopen("output", "wb");
+    if (fp == NULL) {
+        perror("fopen");
+        return 1;
+    }
+
 	char buffer[MAXDATASIZE];
 	int bytes_received;
-	while ((bytes_received = recv(sockfd, buffer, sizeof(buffer), 0)) > 0) {
-		fwrite(buffer, 1, bytes_received, stdout);
-	}
+    int header_found = 0; // Flag to track if we found \r\n\r\n
+
+    while ((bytes_received = recv(sockfd, buffer, sizeof(buffer), 0)) > 0) {
+        
+        if (!header_found) {
+            // We are still looking for the end of the headers
+            char *header_end = strstr(buffer, "\r\n\r\n");
+            
+            if (header_end) {
+                header_found = 1;
+                
+                // Calculate pointer to the start of the body
+                char *body_start = header_end + 4;
+                
+                // Calculate how much body data is left in this chunk
+                int header_len = body_start - buffer;
+                int body_len = bytes_received - header_len;
+                
+                // Write the rest of this chunk to the file
+                if (body_len > 0) {
+                    fwrite(body_start, 1, body_len, fp);
+                }
+            }
+        } else {
+            // Headers are already gone, just write the raw data
+            fwrite(buffer, 1, bytes_received, fp);
+        }
+    }
 	fwrite("\n", 1, 1, stdout);
 
     if (bytes_received == -1) {
