@@ -126,21 +126,10 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-	uint32_t file_size;
-	if (recv(sockfd, &file_size, sizeof(file_size), MSG_WAITALL)!= sizeof(file_size)) {
-		perror("recv file size");
-		close(sockfd);
-		exit(1);
-	}
-
-	printf("http_client: received %u bytes\n", file_size);
-
-	uint32_t file_size_n = ntohl(file_size);
 	char buffer[MAXDATASIZE];
 	int bytes_received;
-	while (file_size_n > 0 && (bytes_received = recv(sockfd, buffer, sizeof(buffer), 0)) > 0) {
+	while ((bytes_received = recv(sockfd, buffer, sizeof(buffer), 0)) > 0) {
 		fwrite(buffer, 1, bytes_received, stdout);
-		file_size_n -= bytes_received;
 	}
 	fwrite("\n", 1, 1, stdout);
 
