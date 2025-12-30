@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
                 
                 FILE *fp = fopen(filepath, "rb");
                 if (fp == NULL) {
-                    char *response = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n";
+                    char *response = "HTTP/1.1 404 Not Found\r\n\r\n";
                     send(new_fd, response, strlen(response), 0);
                 } else {
                     fseek(fp, 0, SEEK_END);
@@ -164,8 +164,6 @@ int main(int argc, char *argv[])
                     char header[256];
                     snprintf(header, sizeof(header),
                              "HTTP/1.1 200 OK\r\n"
-                             "Content-Length: %ld\r\n"
-                             "Connection: close\r\n"
                              "\r\n",
                              filesize);
                     send(new_fd, header, strlen(header), 0);
