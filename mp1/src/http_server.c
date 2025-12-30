@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
             } else {
                 char filepath[1025];
                 // Treat path as relative to current directory, skip leading '/'
-                snsprintf(filepath, sizeof(filepath), ".%s", path + 1);
+                snprintf(filepath, sizeof(filepath), ".%s", path + 1);
 
                 FILE *fp = fopen(filepath, "rb");
                 if (fp == NULL) {
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
 
         close(new_fd);  // parent doesn't need this
     }
-    
+
 	return 0;
 }
 
