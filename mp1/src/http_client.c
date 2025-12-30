@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
         perror("recv");
     }
 
-    fwrite("http_client: file received and saved to 'output'\n", 1, 39, stdout);
+    printf("http_client: file received and saved to 'output'\n");
 
     close(sockfd);
 
