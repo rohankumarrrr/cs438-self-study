@@ -164,11 +164,11 @@ int main(int argc, char *argv[])
     }
 	fwrite("\n", 1, 1, fp);
 
+    printf("http_client: file received and saved to output\n");
+
     if (bytes_received == -1) {
         perror("recv");
     }
-
-    printf("http_client: file received and saved to 'output'\n");
 
     close(sockfd);
 
