@@ -162,11 +162,13 @@ int main(int argc, char *argv[])
             fwrite(buffer, 1, bytes_received, fp);
         }
     }
-	fwrite("\n", 1, 1, stdout);
+	fwrite("\n", 1, 1, fp);
 
     if (bytes_received == -1) {
         perror("recv");
     }
+
+    fwrite("http_client: file received and saved to 'output'\n", 1, 39, stdout);
 
     close(sockfd);
 
