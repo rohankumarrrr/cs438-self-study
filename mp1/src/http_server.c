@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 	for(p = servinfo; p != NULL; p = p->ai_next) {
 		if ((sockfd = socket(p->ai_family, p->ai_socktype,
 				p->ai_protocol)) == -1) {
-			perror("server: socket");
+			perror("http_server: socket");
 			continue;
 		}
 
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
 		if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
 			close(sockfd);
-			perror("server: bind");
+			perror("http_server: bind");
 			continue;
 		}
 
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 	freeaddrinfo(servinfo); // all done with this structure
 
 	if (p == NULL)  {
-		fprintf(stderr, "server: failed to bind\n");
+		fprintf(stderr, "http_server: failed to bind\n");
 		exit(1);
 	}
 
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 		inet_ntop(their_addr.ss_family,
 			get_in_addr((struct sockaddr *)&their_addr),
 			s, sizeof s);
-		printf("server: got connection from %s\n", s);
+		printf("http_server: got connection from %s\n", s);
 
 		if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
@@ -142,6 +142,8 @@ int main(int argc, char *argv[])
             char method[10], path[1024], version[20];
             sscanf(request, "%s %s %s", method, path, version);
 
+            printf("http_server: received GET request from %s for %s\n", s, path);
+
             if (strcmp(method, "GET") != 0) {
                 char *response = "HTTP/1.1 400 Bad Request\r\n\r\n";
                 send(new_fd, response, strlen(response), 0);
@@ -149,7 +151,7 @@ int main(int argc, char *argv[])
                 char filepath[1025];
                 // Treat path as relative to current directory, skip leading '/'
                 snprintf(filepath, sizeof(filepath), ".%s", path + 1);
-
+                
                 FILE *fp = fopen(filepath, "rb");
                 if (fp == NULL) {
                     char *response = "HTTP/1.1 404 Not Found\r\nConnection: close\r\n\r\n";
