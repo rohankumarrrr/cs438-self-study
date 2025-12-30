@@ -126,13 +126,6 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    FILE *output_file = fopen("output", "wb");
-    if (output_file == NULL) {
-        perror("fopen");
-        close(sockfd);
-        exit(1);
-    }
-
 	uint32_t file_size;
 	if (recv(sockfd, &file_size, sizeof(file_size), MSG_WAITALL)!= sizeof(file_size)) {
 		perror("recv file size");
@@ -142,37 +135,20 @@ int main(int argc, char *argv[])
 
 	printf("http_client: received %u bytes\n", file_size);
 
-    char buffer[MAXDATASIZE];
-    int bytes_received;
-    int headers_ended = 0;
-
-    while ((bytes_received = recv(sockfd, buffer, sizeof(buffer), 0)) > 0) {
-        buffer[bytes_received] = '\0';
-        char *body_start = buffer;
-
-        if (!headers_ended) {
-            body_start = strstr(buffer, "\r\n\r\n");
-            if (body_start != NULL) {
-                headers_ended = 1;
-                body_start += 4; // skip past the header delimiter
-                size_t body_len = bytes_received - (body_start - buffer);
-                if (body_len > 0) {
-                    fwrite(body_start, 1, body_len, output_file);
-                }
-            }
-        } else {
-            fwrite(buffer, 1, bytes_received, output_file);
-        }
-    }
+	uint32_t file_size_n = ntohl(file_size);
+	char buffer[MAXDATASIZE];
+	int bytes_received;
+	while (file_size_n > 0 && (bytes_received = recv(sockfd, buffer, sizeof(buffer), 0)) > 0) {
+		fwrite(buffer, 1, bytes_received, stdout);
+		file_size_n -= bytes_received;
+	}
+	fwrite("\n", 1, 1, stdout);
 
     if (bytes_received == -1) {
         perror("recv");
     }
 
-    fclose(output_file);
     close(sockfd);
-
-    printf("File downloaded and saved to 'output'.\n");
 
 	return 0;
 }
