@@ -1,7 +1,9 @@
 *.DS_Store
 
 # Object files
+mp0/obj
 mp0/obj/*
+mp1/obj
 mp1/obj/*
 
 # Compiled source files
