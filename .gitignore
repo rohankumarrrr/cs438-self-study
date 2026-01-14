@@ -1,4 +1,5 @@
 *.DS_Store
+*.venv
 
 # Object files
 mp0/obj
